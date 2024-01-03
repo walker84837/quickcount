@@ -13,6 +13,13 @@
 	color: var(--text-color);
 }
 
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
 html {
 	scroll-behavior: smooth;
 	color-scheme: dark;
@@ -20,6 +27,8 @@ html {
 
 body {
 	background-color: var(--background-color);
+	display: flex;
+	flex-direction: column;
 }
 
 main {
@@ -29,6 +38,7 @@ main {
 	width: min(128ch, calc(100% - 4rem));
 	margin-inline: auto;
 	padding: 1.5rem;
+	flex: 1;
 }
 
 footer {
@@ -64,7 +74,7 @@ a {
 	color: var(--text-color);
 	text-align: center;
 	text-decoration: underline;
-	transition: color 0.25s ease-in-out;
+	transition: color 150ms ease-in-out;
 }
 
 a:hover {
@@ -108,6 +118,7 @@ textarea {
 
 p {
 	font-weight: 300;
+	line-height: 1.7;
 	text-align: justify;
 }
 
