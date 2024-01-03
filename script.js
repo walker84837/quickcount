@@ -1,15 +1,14 @@
-// Get references to the necessary elements
-let textInput = document.getElementById('text-input');
-let wordCount = document.getElementById('word-count');
-let letterCountExcludingSpaces = document.getElementById('letter-count-excluding-spaces');
-let letterCountIncludingSpaces = document.getElementById('letter-count-including-spaces');
-// Event listener to count words and letters on input change
-textInput.addEventListener('input', function () {
-    let text = textInput.value;
-    let words = text.trim().split(/\s+/);
-    let lettersExcludingSpaces = text.replace(/\s/g, '').length;
-    let lettersIncludingSpaces = text.length;
-    wordCount.textContent = "Word count: ".concat(words.length);
-    letterCountExcludingSpaces.textContent = "Letter count (excluding spaces): ".concat(lettersExcludingSpaces);
-    letterCountIncludingSpaces.textContent = "Letter count (including spaces): ".concat(lettersIncludingSpaces);
+let text_input = document.getElementById('text-input');
+let word_count = document.getElementById('word-count');
+let letter_count_excluding_spaces = document.getElementById('letter-count-excluding-spaces');
+let letter_count_including_spaces = document.getElementById('letter-count-including-spaces');
+
+text_input.addEventListener('input', function () {
+	let text = text_input.value;
+	let words = text.trim().split(/\s+/);
+	let letters_excluding_spaces = text.replace(/\s/g, '').length;
+	let letters_including_spaces = text.length;
+	word_count.textContent = `Word count: ${words.length}`;
+	letter_count_excluding_spaces.textContent = `Letter count (excluding spaces): ${letters_excluding_spaces}`;
+	letter_count_including_spaces.textContent = `Letter count (including spaces): ${letters_including_spaces}`;
 });
