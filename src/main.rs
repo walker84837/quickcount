@@ -1,17 +1,23 @@
 use iced::{
-    alignment, color,
-    widget::{column, container, horizontal_rule, row, text},
-    Element, Font, Length, Settings, Task, Theme,
+    alignment::Alignment,
+    widget::{column, container, horizontal_rule, row, text, text_editor, text_editor::Action},
+    Element, Fill, Length, Pixels, Task, Theme,
 };
 use regex::Regex;
 use std::collections::HashMap;
 
 fn main() -> iced::Result {
-    WordCounter::run(Settings::default())
+    let theme = |_s: &WordCounter| Theme::Dark;
+
+    iced::application("Word Counter", WordCounter::update, WordCounter::view)
+        .theme(theme)
+        .centered()
+        .run()
 }
 
+#[derive(Default)]
 struct WordCounter {
-    text_input: String,
+    content: text_editor::Content,
     stats: TextStats,
 }
 
@@ -43,7 +49,7 @@ impl WordCounter {
     fn new(_flags: ()) -> (Self, Task<Message>) {
         (
             Self {
-                text_input: String::new(),
+                content: iced::widget::text_editor::Content::<_>::with_text(""),
                 stats: TextStats::default(),
             },
             Task::none(),
@@ -57,19 +63,31 @@ impl WordCounter {
     fn update(&mut self, message: Message) -> Task<Message> {
         match message {
             Message::TextInputChanged(text) => {
-                self.text_input = text;
-                self.stats = calculate_stats(&self.text_input);
+                self.content = iced::widget::text_editor::Content::<_>::with_text(text.as_str());
+                self.stats = calculate_stats(&self.content.text());
             }
         }
         Task::none()
     }
 
     fn view(&self) -> Element<Message> {
-        let text_area = text_area("", &self.text_input)
-            .on_input(Message::TextInputChanged)
+        let determine_action = |action_type| match action_type {
+            Action::Edit::Insert(c) => Message::TextInputChanged(c.to_string()),
+            Action::Edit::Paste(text) => Message::TextInputChanged((*text).clone()),
+            Action::Edit::Backspace | iced::widget::text_editor::Edit::Delete => {
+                Message::TextModified
+            }
+            _ => Message::NoOp, // Handle Enter or other cases if needed
+        };
+
+        let text_area = text_editor(&self.content)
+            .on_action(|action| match action {
+                Action::Edit(action) => determine_action(action),
+                _ => Message::NoOp,
+            })
             .padding(10)
-            .width(Length::Units(600))
-            .height(Length::Units(150));
+            .width(Pixels(600.0))
+            .height(Length::Fixed(150.0));
 
         let stats = &self.stats;
         let stats_view = column![
@@ -117,17 +135,12 @@ impl WordCounter {
         .size(14)
         .width(600);
 
-        let footer = row![
-            text("Created with ").size(14),
-            text("Iced").style(color!(0x8BDFFA)),
-            text(" - "),
-            text("Main Page").style(color!(0xc17c71))
-        ]
-        .spacing(5)
-        .align_items(alignment::Alignment::Center);
+        let footer = row![text("Created with Iced"), text(" - "), text("Main Page")]
+            .spacing(5)
+            .align_y(Alignment::Center);
 
         let content = column![
-            text("Word Counter").size(30).style(color!(0xebd1c6)),
+            text("Word Counter").size(30),
             text_area,
             stats_view,
             description,
@@ -135,24 +148,19 @@ impl WordCounter {
             footer,
         ]
         .spacing(20)
-        .align_items(alignment::Alignment::Center);
+        .align_x(Alignment::Center);
 
         container(content)
             .width(Length::Fill)
             .height(Length::Fill)
-            .center_x()
-            .center_y()
-            .style(container::Appearance {
-                background: Some(color!(0x4b281b).into()),
-                ..Default::default()
-            })
+            .center(Fill)
             .into()
     }
 }
 
-fn stat_row<'a>(label: &str, value: &str) -> Element<'a, Message> {
+fn stat_row<'a>(label: &'a str, value: &'a str) -> Element<'a, Message> {
     row![
-        text(label).width(Length::Units(200)).size(14),
+        text(label).width(Length::Fixed(200.0)).size(14),
         text(value).size(14),
     ]
     .spacing(10)
@@ -190,13 +198,14 @@ fn calculate_stats(text: &str) -> TextStats {
         .to_string();
 
     let mut word_counts = HashMap::new();
-    for word in words {
+    for word in &words {
         *word_counts.entry(word.to_lowercase()).or_insert(0) += 1;
     }
+    let b = String::new();
     let (most_common_word, _) = word_counts
         .iter()
         .max_by_key(|(_, &count)| count)
-        .unwrap_or((&String::new(), &0));
+        .unwrap_or((&b, &0));
 
     let unique_word_count = word_counts.len();
 
