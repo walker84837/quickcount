@@ -14,16 +14,20 @@
 
 You can build this repo from source (you need [the Rust toolchain](https://rustup.rs)):
 
-1. Clone the repository: ```console
+1. Clone the repository:
+    ```console
     git clone https://github.com/walker84837/word-counter.git
     ```
-2. Compile the code: ```console
+2. Compile the code:
+    ```console
     cargo build --release
     ```
-3. If you prefer, you can move the executable file to some other place: ```console
+3. If you prefer, you can move the executable file to some other place:
+    ```console
     mv target/release/word-counter path/to/your/destination
     ```
-4. Run the code: ```console
+4. Run the code:
+    ```console
     cargo run --release
     ```
 
