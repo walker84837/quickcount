@@ -6,6 +6,7 @@ use iced::{
     },
     Element, Fill, Length, Pixels, Task, Theme,
 };
+use std::borrow::Cow;
 
 mod textstat;
 use textstat::{calculate_stats, TextStats};
@@ -79,39 +80,36 @@ impl WordCounter {
 
         let stats = &self.stats;
         let stats_view = column![
-            stat_row("Words:", &format!("{}", stats.word_count)),
-            stat_row(
-                "Characters (no spaces):",
-                &format!("{}", stats.letter_count)
-            ),
-            stat_row("Sentences:", &format!("{}", stats.sentence_count)),
-            stat_row("Paragraphs:", &format!("{}", stats.paragraph_count)),
+            stat_row("Words:", format!("{}", stats.word_count)),
+            stat_row("Characters (no spaces:", format!("{}", stats.letter_count)),
+            stat_row("Sentences:", format!("{}", stats.sentence_count)),
+            stat_row("Paragraphs:", format!("{}", stats.paragraph_count)),
             stat_row(
                 "Avg word length:",
-                &format!("{:.2}", stats.average_word_length)
+                format!("{:.2}", stats.average_word_length)
             ),
             stat_row(
                 "Avg sentence length:",
-                &format!("{:.2}", stats.average_sentence_length)
+                format!("{:.2}", stats.average_sentence_length)
             ),
             stat_row("Longest word:", &stats.longest_word),
             stat_row("Most common word:", &stats.most_common_word),
-            stat_row("Unique words:", &format!("{}", stats.unique_word_count)),
+            stat_row("Unique words:", format!("{}", stats.unique_word_count)),
             stat_row("Readability Level:", &stats.english_level),
             stat_row(
                 "Flesch-Kincaid:",
-                &format!("{:.2}", stats.flesch_kincaid_grade)
+                format!("{:.2}", stats.flesch_kincaid_grade)
             ),
             stat_row(
                 "Gunning Fog:",
-                &format!(
+                format!(
                     "{:.2} - {}",
                     stats.gunning_fog_index, stats.fog_interpretation
                 )
             ),
             stat_row(
                 "SMOG Grade:",
-                &format!("{:.2} - {}", stats.smog_grade, stats.smog_interpretation)
+                format!("{:.2} - {}", stats.smog_grade, stats.smog_interpretation)
             ),
         ]
         .spacing(5);
@@ -146,7 +144,10 @@ impl WordCounter {
     }
 }
 
-fn stat_row<'a>(label: &'a str, value: &'a str) -> Element<'a, Message> {
+fn stat_row<'a>(
+    label: impl Into<Cow<'a, str>> + iced::widget::text::IntoFragment<'a>,
+    value: impl Into<Cow<'a, str>> + iced::widget::text::IntoFragment<'a>,
+) -> Element<'a, Message> {
     row![
         text(label).width(Length::Fixed(200.0)).size(14),
         text(value).size(14),
