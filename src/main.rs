@@ -34,20 +34,6 @@ enum Message {
 }
 
 impl WordCounter {
-    fn new(_flags: ()) -> (Self, Task<Message>) {
-        (
-            Self {
-                content: iced::widget::text_editor::Content::<_>::with_text(""),
-                stats: TextStats::default(),
-            },
-            Task::none(),
-        )
-    }
-
-    fn title(&self) -> String {
-        String::from("Word Counter")
-    }
-
     fn update(&mut self, message: Message) {
         match message {
             Message::TextInputChanged(text) => {
