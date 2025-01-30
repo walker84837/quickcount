@@ -1,10 +1,11 @@
+// Task may be needed
 use iced::{
     alignment::Alignment,
     widget::{
         column, container, horizontal_rule, row, text, text_editor,
         text_editor::{Action, Edit},
     },
-    Element, Fill, Length, Pixels, Task, Theme,
+    Element, Fill, Length, Pixels, Theme,
 };
 use std::borrow::Cow;
 
