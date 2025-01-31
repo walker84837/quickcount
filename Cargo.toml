@@ -2,6 +2,20 @@
 name = "quickcount"
 version = "0.1.0"
 edition = "2021"
+license = "BSD-3-Clause"
+categories = ["graphical-user-interface"]
+keywords = ["gui", "statistics", "wordcount"]
+readme = "README.md"
+repository = "https://github.com/walker84837/quickcount"
+
+[profile.dev]
+debug = false
+
+[profile.release]
+strip = true
+lto = true
+overflow-checks = true
+panic = "abort"
 
 [dependencies]
 iced = "0.13.1"
