@@ -13,16 +13,16 @@ mod textstat;
 use textstat::{calculate_stats, TextStats};
 
 fn main() -> iced::Result {
-    let theme = |_s: &WordCounter| Theme::Dark;
+    let theme = |_s: &QuickCount| Theme::Dark;
 
-    iced::application("QuickCount", WordCounter::update, WordCounter::view)
+    iced::application("QuickCount", QuickCount::update, QuickCount::view)
         .theme(theme)
         .centered()
         .run()
 }
 
 #[derive(Default)]
-struct WordCounter {
+struct QuickCount {
     content: text_editor::Content,
     stats: TextStats,
 }
@@ -34,7 +34,7 @@ enum Message {
     NoOp,
 }
 
-impl WordCounter {
+impl QuickCount {
     fn update(&mut self, message: Message) {
         match message {
             Message::TextInputChanged(text) => {
