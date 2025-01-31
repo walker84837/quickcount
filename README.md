@@ -1,4 +1,4 @@
-# quickcount
+# QuickCount
 
 > Sleek, blazingly fast and minimalist word counter for the desktop.
 
@@ -6,9 +6,10 @@
 
 ## Table of Contents
 
-1.  [Usage](#usage)
-2.  [Contributing](#contributing)
-3.  [License](#license)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ## Usage
 
@@ -16,17 +17,17 @@ You can build this repo from source (you need [the Rust toolchain](https://rustu
 
 1. Clone the repository:
     ```console
-    git clone https://github.com/walker84837/word-counter.git
+    git clone https://github.com/walker84837/quickcount.git
     ```
-2. Compile the code:
+2. It may take a while at first, depending on where you're compiling, run:
     ```console
     cargo build --release
     ```
 3. If you prefer, you can move the executable file to some other place:
     ```console
-    mv target/release/word-counter path/to/your/destination
+    mv target/release/quickcount path/to/your/destination
     ```
-4. Run the code:
+4. If prefer to keep the binary in the same directory, you can run the code with Cargo (you can do this without doing step 2 as it builds automatically):
     ```console
     cargo run --release
     ```
@@ -35,6 +36,11 @@ You can build this repo from source (you need [the Rust toolchain](https://rustu
 
 Contributions are always welcome!
 If you encounter problems or have questions, feel free to open an issue.
+
+## Roadmap
+
+- [ ] Add support for selecting text (and consequently copy/paste it)
+- [ ] Add support for clicking on text
 
 ## License
 
