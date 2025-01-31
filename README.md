@@ -32,6 +32,10 @@ You can build this repo from source (you need [the Rust toolchain](https://rustu
     cargo run --release
     ```
 
+> [!WARNING]
+> This is a work in progress and is not yet ready for daily use.
+> If you encounter any issues, please open an issue.
+
 ## Contributing
 
 Contributions are always welcome!
