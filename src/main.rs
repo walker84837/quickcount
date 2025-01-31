@@ -9,13 +9,19 @@ use iced::{
 };
 use std::borrow::Cow;
 
+mod qc_editor;
 mod textstat;
-use textstat::{calculate_stats, TextStats};
+use crate::{
+    qc_editor::QCEditor,
+    textstat::{calculate_stats, TextStats},
+};
+
+const NAME: &str = "QuickCount";
 
 fn main() -> iced::Result {
     let theme = |_s: &QuickCount| Theme::Dark;
 
-    iced::application("QuickCount", QuickCount::update, QuickCount::view)
+    iced::application(NAME, QuickCount::update, QuickCount::view)
         .theme(theme)
         .centered()
         .run()
@@ -25,40 +31,123 @@ fn main() -> iced::Result {
 struct QuickCount {
     content: text_editor::Content,
     stats: TextStats,
+    editor: QCEditor,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
     TextInputChanged(String),
-    TextModified,
+    TextDeleted(DeleteState),
     NoOp,
 }
+
+#[derive(Debug, Clone)]
+enum DeleteType {
+    BeforeCursor,
+    AfterCursor,
+}
+
+type DeleteState = (DeleteType, (usize, usize));
 
 impl QuickCount {
     fn update(&mut self, message: Message) {
         match message {
             Message::TextInputChanged(text) => {
-                self.content = iced::widget::text_editor::Content::<_>::with_text(&text);
-                self.stats = calculate_stats(&text);
+                // Append the new text and update our models
+                self.editor.add_new_content(text.clone());
+                self.content =
+                    iced::widget::text_editor::Content::<_>::with_text(&self.editor.content);
+                self.stats = calculate_stats(&self.editor.content);
             }
-            Message::TextModified => {
-                // Handle modifications here if needed
+            Message::TextDeleted(delete_state) => {
+                self.handle_text_deletion(delete_state);
             }
             Message::NoOp => {}
         }
     }
 
-    fn view(&self) -> Element<Message> {
-        let determine_action = |action| match action {
-            Edit::Insert(c) => Message::TextInputChanged(c.to_string()),
-            Edit::Paste(text) => Message::TextInputChanged((*text).clone()),
-            Edit::Backspace | Edit::Delete => Message::TextModified,
-            _ => Message::NoOp,
-        };
+    /// Helper function: given the current text, a target line and column,
+    /// return the corresponding byte index.
+    fn pos_to_index(text: &str, target_line: usize, target_col: usize) -> Option<usize> {
+        let mut current_line = 0;
+        let mut current_col = 0;
+        for (i, ch) in text.char_indices() {
+            if current_line == target_line && current_col == target_col {
+                return Some(i);
+            }
+            if ch == '\n' {
+                current_line += 1;
+                current_col = 0;
+            } else {
+                current_col += 1;
+            }
+        }
+        // If we are at the end of the text and the position matches,
+        // return text.len()
+        if current_line == target_line && current_col == target_col {
+            Some(text.len())
+        } else {
+            None
+        }
+    }
 
+    /// Handles deletion by converting the (line, column) position into a byte
+    /// index and then removing the proper character.
+    fn handle_text_deletion(&mut self, delete_state: DeleteState) {
+        let (delete_type, (line, column)) = delete_state;
+        if let Some(index) = Self::pos_to_index(&self.editor.content, line, column) {
+            match delete_type {
+                DeleteType::BeforeCursor => {
+                    if index > 0 {
+                        // Remove the character immediately before the cursor.
+                        // Find the start of the previous character.
+                        let char_start = self.editor.content[..index]
+                            .char_indices()
+                            .rev()
+                            .next()
+                            .map(|(i, _)| i)
+                            .unwrap();
+                        self.editor.content.replace_range(char_start..index, "");
+                    }
+                }
+                DeleteType::AfterCursor => {
+                    if index < self.editor.content.len() {
+                        // Remove the character at the cursor.
+                        let char_end = self.editor.content[index..]
+                            .char_indices()
+                            .next()
+                            .map(|(i, ch)| index + i + ch.len_utf8())
+                            .unwrap();
+                        self.editor.content.replace_range(index..char_end, "");
+                    }
+                }
+            }
+            // Update the content and the text statistics.
+            self.content = iced::widget::text_editor::Content::with_text(&self.editor.content);
+            self.stats = calculate_stats(&self.editor.content);
+        }
+    }
+
+    fn determine_action(&self, action: Action) -> Message {
+        let pos = self.content.cursor_position();
+        match action {
+            Action::Edit(edit_action) => match edit_action {
+                Edit::Insert(c) => Message::TextInputChanged(c.to_string()),
+                Edit::Paste(text) => Message::TextInputChanged((*text).clone()),
+                Edit::Backspace => Message::TextDeleted((DeleteType::BeforeCursor, pos)),
+                Edit::Delete => Message::TextDeleted((DeleteType::AfterCursor, pos)),
+                _ => Message::NoOp,
+            },
+            _ => Message::NoOp,
+        }
+    }
+
+    fn view(&self) -> Element<Message> {
         let text_area = text_editor(&self.content)
             .on_action(move |action| match action {
-                Action::Edit(edit_action) => determine_action(edit_action),
+                Action::Edit(edit_action) => {
+                    Self::determine_action(&self, Action::Edit(edit_action))
+                }
                 _ => Message::NoOp,
             })
             .padding(10)
@@ -108,12 +197,16 @@ impl QuickCount {
         .size(14)
         .width(600);
 
-        let footer = row![text("Created with Iced"), text(" - "), text("Main Page")]
-            .spacing(5)
-            .align_y(Alignment::Center);
+        let footer = row![
+            text("Made with <3 by walker84837"),
+            text(" - "),
+            text("Feel free to contribute at https://github.com/walker84837/quickcount")
+        ]
+        .spacing(5)
+        .align_y(Alignment::Center);
 
         let content = column![
-            text("Word Counter").size(30),
+            text(NAME).size(30),
             text_area,
             stats_view,
             description,
