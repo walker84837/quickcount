@@ -1,51 +1,50 @@
-# word-counter
+# QuickCount
+
+> Sleek, blazingly fast and minimalist word counter for the desktop.
 
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.md)
 
-A simple web-based word counter.
-
 ## Table of Contents
 
-1.  [Usage](#usage)
-2.  [Roadmap](#roadmap)
-3.  [Contributing](#contributing)
-4.  [License](#license)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ## Usage
 
-To use this repository offline
+You can build this repo from source (you need [the Rust toolchain](https://rustup.rs)):
 
-1.  Clone the repository:
-    ``` console
-    git clone https://github.com/walker84837/word-counter.git
+1. Clone the repository:
+    ```console
+    git clone https://github.com/walker84837/quickcount.git
     ```
-2.  Open the `index.html` file in your web browser.
-3.  Copy and paste the text you want to count into the text area.
-4.  The website will automatically update the number of words, letters
-    (excluding spaces and including spaces).
+2. It may take a while at first, depending on where you're compiling, run:
+    ```console
+    cargo build --release
+    ```
+3. If you prefer, you can move the executable file to some other place:
+    ```console
+    mv target/release/quickcount path/to/your/destination
+    ```
+4. If prefer to keep the binary in the same directory, you can run the code with Cargo (you can do this without doing step 2 as it builds automatically):
+    ```console
+    cargo run --release
+    ```
 
-## Roadmap
-
-  - Explore the possibility of using alternative backends such as [Rocket](https://rocket.rs/)
-    or [Actix](https://actix.rs/) as I have found myself preferring Rust.
-  - Improve user experience with additional features such as:
-      - Reading time
-      - Speaking time
-      - Paragraph count
-      - Switch between light and dark mode
+> [!WARNING]
+> This is a work in progress and is not yet ready for daily use.
+> If you encounter any issues, please open an issue.
 
 ## Contributing
 
-Contributions are always welcome\! If you would like to contribute to this
-project, please follow these steps:
-
-1.  Follow the [Linux kernel coding style](https://docs.kernel.org/process/coding-style.html).
-2.  Follow the [code of conduct](CODE_OF_CONDUCT.md).
-3.  Suggest new features by opening an issue.
-4.  Write commit messages according to [this guide](https://commit.style/).
-5.  Use the [JSDoc](https://github.com/jsdoc/jsdoc) when contributing, and specify types.
-
+Contributions are always welcome!
 If you encounter problems or have questions, feel free to open an issue.
+
+## Roadmap
+
+- [ ] Add support for selecting text (and consequently copy/paste it)
+- [ ] Add support for clicking on text
 
 ## License
 
