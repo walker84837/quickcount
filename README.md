@@ -2,6 +2,10 @@
 
 > Sleek, blazingly fast and minimalist word counter for the desktop.
 
+> [!WARNING]
+> This is a work in progress and is not yet ready for daily use.
+> If you encounter any issues, please open an issue.
+
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.md)
 
 ## Table of Contents
@@ -13,7 +17,7 @@
 
 ## Usage
 
-You can build this repo from source (you need [the Rust toolchain](https://rustup.rs)):
+To build this repo from source, you need [the Rust toolchain](https://rustup.rs), and follow these steps:
 
 1. Clone the repository:
     ```console
@@ -27,19 +31,15 @@ You can build this repo from source (you need [the Rust toolchain](https://rustu
     ```console
     mv target/release/quickcount path/to/your/destination
     ```
+    You can move this to `/usr/local/bin` or any other path which is in your `$PATH`.
 4. If prefer to keep the binary in the same directory, you can run the code with Cargo (you can do this without doing step 2 as it builds automatically):
     ```console
     cargo run --release
     ```
 
-> [!WARNING]
-> This is a work in progress and is not yet ready for daily use.
-> If you encounter any issues, please open an issue.
-
 ## Contributing
 
-Contributions are always welcome!
-If you encounter problems or have questions, feel free to open an issue.
+Contributions are always welcome! If you encounter problems or have questions, feel free to open an issue.
 
 ## Roadmap
 

@@ -1,12 +1,15 @@
 [package]
 name = "quickcount"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 license = "BSD-3-Clause"
-categories = ["graphical-user-interface"]
-keywords = ["gui", "statistics", "wordcount"]
+categories = ["mathematics", "gui"]
+description = "Sleek, minimal and blazingly fast word counter app."
+keywords = ["gui", "statistics", "word-count", "text"]
 readme = "README.md"
+authors = ["walker84837"]
 repository = "https://github.com/walker84837/quickcount"
+rust-version = "1.85.0"
 
 [profile.dev]
 debug = false

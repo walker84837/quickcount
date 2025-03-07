@@ -57,7 +57,7 @@ pub fn calculate_stats(text: &str) -> TextStats {
     let b = String::new();
     let (most_common_word, _) = word_counts
         .iter()
-        .max_by_key(|(_, &count)| count)
+        .max_by_key(|&(_, &count)| count)
         .unwrap_or((&b, &0));
 
     let unique_word_count = word_counts.len();
