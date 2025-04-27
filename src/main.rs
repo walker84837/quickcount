@@ -1,20 +1,13 @@
 // Task may be needed
 use iced::{
-    alignment::Alignment,
-    widget::{
-        column, container, horizontal_rule, row, text, text_editor,
-        text_editor::{Action, Edit},
-    },
     Element, Fill, Length, Pixels, Theme,
+    alignment::Alignment,
+    widget::{column, container, horizontal_rule, row, text, text_editor, text_editor::Action},
 };
 use std::borrow::Cow;
 
-mod qc_editor;
 mod textstat;
-use crate::{
-    qc_editor::QCEditor,
-    textstat::{calculate_stats, TextStats},
-};
+use crate::textstat::{TextStats, calculate_stats};
 
 const NAME: &str = "QuickCount";
 
@@ -31,125 +24,26 @@ fn main() -> iced::Result {
 struct QuickCount {
     content: text_editor::Content,
     stats: TextStats,
-    editor: QCEditor,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
-    TextInputChanged(String),
-    TextDeleted(DeleteState),
-    NoOp,
+    TextInputChanged(Action),
 }
-
-#[derive(Debug, Clone)]
-enum DeleteType {
-    BeforeCursor,
-    AfterCursor,
-}
-
-type DeleteState = (DeleteType, (usize, usize));
 
 impl QuickCount {
     fn update(&mut self, message: Message) {
         match message {
-            Message::TextInputChanged(text) => {
-                // Append the new text and update our models
-                self.editor.add_new_content(text.clone());
-                self.content =
-                    iced::widget::text_editor::Content::<_>::with_text(&self.editor.content);
-                self.stats = calculate_stats(&self.editor.content);
+            Message::TextInputChanged(action) => {
+                self.content.perform(action);
+                self.stats = calculate_stats(&self.content.text());
             }
-            Message::TextDeleted(delete_state) => {
-                self.handle_text_deletion(delete_state);
-            }
-            Message::NoOp => {}
-        }
-    }
-
-    /// Helper function: given the current text, a target line and column,
-    /// return the corresponding byte index.
-    fn pos_to_index(text: &str, target_line: usize, target_col: usize) -> Option<usize> {
-        let mut current_line = 0;
-        let mut current_col = 0;
-        for (i, ch) in text.char_indices() {
-            if current_line == target_line && current_col == target_col {
-                return Some(i);
-            }
-            if ch == '\n' {
-                current_line += 1;
-                current_col = 0;
-            } else {
-                current_col += 1;
-            }
-        }
-        // If we are at the end of the text and the position matches,
-        // return text.len()
-        if current_line == target_line && current_col == target_col {
-            Some(text.len())
-        } else {
-            None
-        }
-    }
-
-    /// Handles deletion by converting the (line, column) position into a byte
-    /// index and then removing the proper character.
-    fn handle_text_deletion(&mut self, delete_state: DeleteState) {
-        let (delete_type, (line, column)) = delete_state;
-        if let Some(index) = Self::pos_to_index(&self.editor.content, line, column) {
-            match delete_type {
-                DeleteType::BeforeCursor => {
-                    if index > 0 {
-                        // Remove the character immediately before the cursor.
-                        // Find the start of the previous character.
-                        let char_start = self.editor.content[..index]
-                            .char_indices()
-                            .rev()
-                            .next()
-                            .map(|(i, _)| i)
-                            .unwrap();
-                        self.editor.content.replace_range(char_start..index, "");
-                    }
-                }
-                DeleteType::AfterCursor => {
-                    if index < self.editor.content.len() {
-                        // Remove the character at the cursor.
-                        let char_end = self.editor.content[index..]
-                            .char_indices()
-                            .next()
-                            .map(|(i, ch)| index + i + ch.len_utf8())
-                            .unwrap();
-                        self.editor.content.replace_range(index..char_end, "");
-                    }
-                }
-            }
-            // Update the content and the text statistics.
-            self.content = iced::widget::text_editor::Content::with_text(&self.editor.content);
-            self.stats = calculate_stats(&self.editor.content);
-        }
-    }
-
-    fn determine_action(&self, action: Action) -> Message {
-        let pos = self.content.cursor_position();
-        match action {
-            Action::Edit(edit_action) => match edit_action {
-                Edit::Insert(c) => Message::TextInputChanged(c.to_string()),
-                Edit::Paste(text) => Message::TextInputChanged((*text).clone()),
-                Edit::Backspace => Message::TextDeleted((DeleteType::BeforeCursor, pos)),
-                Edit::Delete => Message::TextDeleted((DeleteType::AfterCursor, pos)),
-                _ => Message::NoOp,
-            },
-            _ => Message::NoOp,
         }
     }
 
     fn view(&self) -> Element<Message> {
         let text_area = text_editor(&self.content)
-            .on_action(move |action| match action {
-                Action::Edit(edit_action) => {
-                    Self::determine_action(&self, Action::Edit(edit_action))
-                }
-                _ => Message::NoOp,
-            })
+            .on_action(move |action| Message::TextInputChanged(action))
             .padding(10)
             .width(Pixels(600.0))
             .height(Length::Fixed(150.0));
