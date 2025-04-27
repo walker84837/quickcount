@@ -66,15 +66,32 @@ pub fn calculate_stats(text: &str) -> TextStats {
     let total_syllables: usize = words.iter().map(|w| count_syllables(w)).sum();
     let complex_word_count = words.iter().filter(|w| count_syllables(w) >= 3).count();
 
-    let flesch_kincaid_grade = 0.39 * average_sentence_length
-        + 11.8 * (total_syllables as f64 / word_count as f64)
-        - 15.59;
+    let syllables_per_word = if word_count > 0 {
+        total_syllables as f64 / word_count as f64
+    } else {
+        0.0
+    };
 
-    let gunning_fog_index =
-        0.4 * (average_sentence_length + 100.0 * (complex_word_count as f64 / word_count as f64));
+    let flesch_kincaid_grade = if word_count > 0 {
+        0.39 * average_sentence_length + 11.8 * syllables_per_word - 15.59
+    } else {
+        0.0
+    };
 
-    let smog_grade =
-        1.043 * (complex_word_count as f64 * (30.0 / sentence_count as f64)).sqrt() + 3.1291;
+    let complex_word_percent = if word_count > 0 {
+        complex_word_count as f64 / word_count as f64
+    } else {
+        0.0
+    };
+
+    let gunning_fog_index = 0.4 * (average_sentence_length + 100.0 * complex_word_percent);
+
+    let smog_grade = if sentence_count > 0 {
+        let sentences_factor = 30.0 / sentence_count as f64;
+        1.043 * (complex_word_count as f64 * sentences_factor).sqrt() + 3.1291
+    } else {
+        0.0
+    };
 
     let english_level = if flesch_kincaid_grade <= 5.0 {
         "Basic"

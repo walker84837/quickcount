@@ -1,13 +1,12 @@
-// Task may be needed
 use iced::{
-    Element, Fill, Length, Pixels, Theme,
     alignment::Alignment,
     widget::{column, container, horizontal_rule, row, text, text_editor, text_editor::Action},
+    Element, Fill, Length, Pixels, Theme,
 };
 use std::borrow::Cow;
 
 mod textstat;
-use crate::textstat::{TextStats, calculate_stats};
+use crate::textstat::{calculate_stats, TextStats};
 
 const NAME: &str = "QuickCount";
 
