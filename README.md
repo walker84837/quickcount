@@ -41,10 +41,11 @@ To build this repo from source, you need [the Rust toolchain](https://rustup.rs)
 
 Contributions are always welcome! If you encounter problems or have questions, feel free to open an issue.
 
-## Roadmap
+### Roadmap
 
-- [ ] Add support for selecting text (and consequently copy/paste it)
-- [ ] Add support for clicking on text
+- [ ] Make theme customizable based on a config file
+- [X] Add support for selecting text (and consequently copy/paste it)
+- [X] Add support for clicking on text
 
 ## License
 
