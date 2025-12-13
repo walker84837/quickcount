@@ -1,19 +1,19 @@
 use iced::{
-    alignment::Alignment,
-    widget::{column, container, horizontal_rule, row, text, text_editor, text_editor::Action},
     Element, Fill, Length, Pixels, Theme,
+    alignment::Alignment,
+    widget::{column, container, row, rule::horizontal, text, text_editor, text_editor::Action},
 };
 use std::borrow::Cow;
 
 mod textstat;
-use crate::textstat::{calculate_stats, TextStats};
+use crate::textstat::{TextStats, calculate_stats};
 
 const NAME: &str = "QuickCount";
 
 fn main() -> iced::Result {
     let theme = |_s: &QuickCount| Theme::Dark;
 
-    iced::application(NAME, QuickCount::update, QuickCount::view)
+    iced::application(QuickCount::default, QuickCount::update, QuickCount::view)
         .theme(theme)
         .centered()
         .run()
@@ -40,9 +40,9 @@ impl QuickCount {
         }
     }
 
-    fn view(&self) -> Element<Message> {
+    fn view(&self) -> Element<'_, Message> {
         let text_area = text_editor(&self.content)
-            .on_action(move |action| Message::TextInputChanged(action))
+            .on_action(Message::TextInputChanged)
             .padding(10)
             .width(Pixels(600.0))
             .height(Length::Fixed(150.0));
@@ -103,7 +103,7 @@ impl QuickCount {
             text_area,
             stats_view,
             description,
-            horizontal_rule(1),
+            horizontal(1),
             footer,
         ]
         .spacing(20)
