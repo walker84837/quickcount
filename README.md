@@ -44,6 +44,7 @@ Contributions are always welcome! If you encounter problems or have questions, f
 ### Roadmap
 
 - [ ] Make theme customizable based on a config file
+- [ ] Unit tests to ensure correctness in text analysis
 - [X] Add support for selecting text (and consequently copy/paste it)
 - [X] Add support for clicking on text
 
