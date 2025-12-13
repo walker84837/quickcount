@@ -1,5 +1,7 @@
 # QuickCount
 
+<img width="1020" height="723" alt="quickcount" src="https://github.com/user-attachments/assets/b1896053-5abb-4599-b51a-7457ab23e285" />
+
 > Sleek, blazingly fast and minimalist word counter for the desktop.
 
 > [!WARNING]
